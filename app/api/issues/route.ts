@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from 'zod'
+import { string, z } from 'zod'
 import {PrismaClient} from "@prisma/client"
 
 const prisma = new PrismaClient()
@@ -12,7 +12,7 @@ const createIssueSchema = z.object({
     description: z.string().min(1),
     priority: PriorityEnum,
     status: StatusEnum.optional(),
-    important_dates: z.string().optional()
+    important_dates: z.array(z.string())
 })
 
 export async function POST(request: NextRequest){
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest){
         description: validation.data.description,
         priority: validation.data.priority,
         status: validation.data.status ?? "BACKLOG",
-        important_dates: validation.data.important_dates ?? ""
+        important_dates: validation.data.important_dates ?? []
     }
    })
 
