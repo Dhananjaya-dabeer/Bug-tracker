@@ -28,8 +28,8 @@ model Issue {
   title           String
   description     String
   priority        Priority
-  status          Status   @default(BACKLOG)
-  important_dates String
+  status          Status?  @default(BACKLOG)
+  important_dates String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
