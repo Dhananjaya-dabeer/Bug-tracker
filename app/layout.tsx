@@ -4,7 +4,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Theme, ThemePanel } from "@radix-ui/themes"
 import Navbar from './NavBar'
-
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
         <Theme accentColor="violet">
           <Navbar/>
           <main className="p-5">{children}</main>
+          <ToastContainer/>
         </Theme>
       </body>
     </html>

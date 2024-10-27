@@ -4,12 +4,16 @@ import React, { useState } from 'react'
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { RxCross1 } from "react-icons/rx";
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+
 interface data{
     title:string,
     priority: string,
     description: string,
     important_dates: string[]
 }
+
 const NewIssuePage = () => {
     const priority = [ "LOW", "MEDIUM", "HIGH"]
     const [formData, setFormData] = useState<data>({
@@ -20,6 +24,8 @@ const NewIssuePage = () => {
     })
     const [newDate, setNewDate] = useState("")
     const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+    const router = useRouter()
+
      const handleDateChange = () => {
         
         if (newDate) {
@@ -44,9 +50,25 @@ const NewIssuePage = () => {
         }, 300); 
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault()
-        console.log(formData)
+        const response = await fetch("/api/issues", {
+            method:"POST",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body:JSON.stringify(formData)
+        })
+
+        const result = await response.json()
+        if(!response.ok){
+            toast.error(`${result[0]?.path[0]}: ${result[0]?.message}`)
+            return
+        }else{
+            toast.success("Task created")
+            router.push('/issues')
+        }
+        
     }
 
   return (
@@ -66,8 +88,8 @@ const NewIssuePage = () => {
             </Select.Root>
             <TextField.Root className='w-36' type='date' value={newDate} onChange={(e) => setNewDate(e.target.value)}>
             </TextField.Root>
+            <Button onClick={handleDateChange} type='button' style={{cursor:"pointer"}} >Add date</Button>
 
-            <Button onClick={handleDateChange} type='button'>Add date</Button>
         </div>
 
         <div className='flex gap-2 items-center'>
@@ -88,7 +110,8 @@ const NewIssuePage = () => {
         </div>
 
         <SimpleMDE placeholder='description' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>
-        <Button type='submit'>Submit New Issue</Button>
+
+        <Button type='submit' style={{cursor:"pointer"}} >Submit New Issue</Button>
     </form>
   )
 }
