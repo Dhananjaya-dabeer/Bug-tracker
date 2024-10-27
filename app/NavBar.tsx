@@ -14,9 +14,9 @@ const Navbar = () => {
         {label:"Bugs/Tasks", href:"/issues"},
     ]
   return (
-    <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center'>
-        <Link href={"/"}><HiMiniBugAnt/></Link>
-        <ul className='flex space-x-6'>
+    <nav className='flex space-x-6 border-b mb-5 px-5 h-14 items-center justify-between'>
+        <ul className='flex space-x-6 items-center'>
+        <Link href={"/"} ><HiMiniBugAnt/></Link>
             {
                 links.map((item, idx) => 
                     <Link key={idx} href={item.href} className={classnames({
@@ -26,7 +26,17 @@ const Navbar = () => {
                     })}>{item.label}</Link>
                 )
             }
+           
         </ul>
+        <Link 
+        href={'/login'} 
+        className={classnames({
+        'text-red-300': true,
+        'hover:text-red-500 transition-colors': true,
+        })}
+        >
+        Logout
+        </Link>
     </nav>
   )
 }

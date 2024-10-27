@@ -6,6 +6,7 @@ import { Theme, ThemePanel } from "@radix-ui/themes"
 import Navbar from './NavBar'
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from "./context/AuthContext";
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -19,7 +20,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <AuthProvider>
+      <html lang="en">
       <body className={inter.className}>
         <Theme accentColor="violet">
           <Navbar/>
@@ -28,5 +30,6 @@ export default function RootLayout({
         </Theme>
       </body>
     </html>
+    </AuthProvider>
   )
 }
