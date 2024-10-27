@@ -8,9 +8,11 @@ const PriorityEnum = z.enum([ "LOW", "MEDIUM", "HIGH"])
 const StatusEnum = z.enum(["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED"]);
 
 const createIssueSchema = z.object({
-    title: z.string().min(1).max(255),
-    description: z.string().min(1),
-    priority: PriorityEnum,
+    title: z.string().min(1, "Title is required!").max(255),
+    priority: PriorityEnum.refine(value => value !== undefined, {
+        message: "Priority is required!",
+    }),
+    description: z.string().min(1, "Description is required"),
     status: StatusEnum.optional(),
     important_dates: z.array(z.string())
 })

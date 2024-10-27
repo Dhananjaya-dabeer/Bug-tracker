@@ -6,6 +6,8 @@ import "easymde/dist/easymde.min.css";
 import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import CalloutTheme from '@/Components/CalloutTheme';
+import Spinner from '@/Components/Spinner';
 
 interface data{
     title:string,
@@ -14,16 +16,27 @@ interface data{
     important_dates: string[]
 }
 
+interface item{
+    path: string[],
+    message: ''
+}
+
 const NewIssuePage = () => {
     const priority = [ "LOW", "MEDIUM", "HIGH"]
     const [formData, setFormData] = useState<data>({
         title:'',
-        priority: 'LOW',
+        priority: '',
         description: '',
         important_dates: [],
     })
     const [newDate, setNewDate] = useState("")
     const [removingIndex, setRemovingIndex] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false)
+    const [errors, setErrors] = useState({
+        title:'',
+        priority:'',
+        description:''
+    })
     const router = useRouter()
 
      const handleDateChange = () => {
@@ -50,35 +63,60 @@ const NewIssuePage = () => {
         }, 300); 
     }
 
-    const handleSubmit = async(e: React.FormEvent) => {
-        e.preventDefault()
-        const response = await fetch("/api/issues", {
-            method:"POST",
-            headers:{
-                "Content-Type": "application/json"
-            },
-            body:JSON.stringify(formData)
-        })
-
-        const result = await response.json()
-        if(!response.ok){
-            toast.error(`${result[0]?.path[0]}: ${result[0]?.message}`)
-            return
-        }else{
-            toast.success("Task created")
-            router.push('/issues')
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+    
+        const updateState = {
+            title: '',
+            priority: '',
+            description: ''
+        };
+        setErrors(updateState);
+    
+        try {
+            const response = await fetch("/api/issues", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+    
+            const result = await response.json();
+            if (!response.ok) {
+                result.forEach((item : item) => {
+                    if (item?.path?.[0] === 'title') 
+                        setErrors(prev => ({ ...prev, title: item.message }));
+                    if (item?.path?.[0] === 'priority') 
+                        setErrors(prev => ({ ...prev, priority: 'Priority Required!' }));
+                    if (item?.path?.[0] === 'description') 
+                        setErrors(prev => ({ ...prev, description: item.message }));
+                });
+                // toast.error(`${result[0]?.path[0]}: ${result[0]?.path[0] === 'priority' ? 'Priority Required!' : result[0]?.message}`);
+                return;
+            } else {
+                toast.success("Task created");
+                router.push('/issues');
+            }
+        } catch (error) {
+            console.error("Error occurred during submission:", error);
+            toast.error("An unexpected error occurred. Please try again.");
+        } finally {
+            setIsLoading(false);
         }
-        
-    }
+    };
+    
 
   return (
     <form className='max-w-xl space-y-3' onSubmit={handleSubmit}>
-        <TextField.Root placeholder='Title' onChange={(e) => setFormData({...formData, title: e.target.value})}>
+        <TextField.Root placeholder='Title*' onChange={(e) => setFormData({...formData, title: e.target.value})}>
         </TextField.Root>
-
+        {errors.title && <CalloutTheme message={errors.title} />}
         <div className='flex gap-4'>
-            <Select.Root defaultValue='LOW' onValueChange={(value) => setFormData({...formData, priority: value})}>
-                <Select.Trigger/>
+            <div className='flex flex-col space-y-3'>
+            <Select.Root  onValueChange={(value) => setFormData({...formData, priority: value})}>
+                <Select.Trigger placeholder="Select priority*"/>
                 <Select.Content>
                 <Select.Group>
                     <Select.Label>Priority</Select.Label>
@@ -86,7 +124,9 @@ const NewIssuePage = () => {
                 </Select.Group>
                 </Select.Content>
             </Select.Root>
-            <TextField.Root className='w-36' type='date' value={newDate} onChange={(e) => setNewDate(e.target.value)}>
+            {errors.priority && <CalloutTheme message={errors.priority} />}
+            </div>
+            <TextField.Root className='w-36' type='date' placeholder='Select date' value={newDate} onChange={(e) => setNewDate(e.target.value)}>
             </TextField.Root>
             <Button onClick={handleDateChange} type='button' style={{cursor:"pointer"}} >Add date</Button>
 
@@ -109,9 +149,10 @@ const NewIssuePage = () => {
             </div>)}
         </div>
 
-        <SimpleMDE placeholder='description' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>
+        <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>
+        {errors.description && <CalloutTheme message={errors.description} />}
 
-        <Button type='submit' style={{cursor:"pointer"}} >Submit New Issue</Button>
+        <Button type='submit' style={{cursor:"pointer"}} disabled={isLoading} >Submit New Issue {isLoading && <Spinner />}</Button>
     </form>
   )
 }
