@@ -3,10 +3,13 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Theme, ThemePanel } from "@radix-ui/themes"
-import Navbar from './NavBar'
+import Navbar from './Navbar/NavBar'
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -24,7 +27,9 @@ export default function RootLayout({
       <html lang="en">
       <body className={inter.className}>
         <Theme accentColor="violet">
-          <Navbar/>
+          <ProtectedRoute>
+            <Navbar/>
+          </ProtectedRoute>
           <main className="p-5">{children}</main>
           <ToastContainer/>
         </Theme>

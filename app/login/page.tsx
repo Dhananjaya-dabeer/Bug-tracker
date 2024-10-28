@@ -3,7 +3,7 @@
 import { Box, Card, Inset, Strong, Text, Button, TextField, Flex } from '@radix-ui/themes';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ const Login = () => {
     try {
       await login(email, password); // Await the login call
     } catch (error) {
-      toast.error("Error in login Please try after some time!"); // Show error message if login fails
+      console.error("Error in login Please try after some time!"); // Show error message if login fails
     }
   };
 
@@ -28,8 +28,6 @@ const Login = () => {
           <Text  size="4" >
             Login
           </Text>
-        {/* <div  className='flex justify-center mb-6'>
-        </div> */}
         <form onSubmit={handleSubmit} className='flex flex-col space-y-6'>
           <Box>
             <TextField.Root

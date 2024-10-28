@@ -1,10 +1,11 @@
 'use client'
 import { Button, Select, TextField } from '@radix-ui/themes'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-toastify';
+import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CalloutTheme from '@/Components/CalloutTheme';
 import Spinner from '@/Components/Spinner';
@@ -21,7 +22,7 @@ interface item{
     message: ''
 }
 
-const NewIssuePage = () => {
+const EditIssue = () => {
     const priority = [ "LOW", "MEDIUM", "HIGH"]
     const [formData, setFormData] = useState<data>({
         title:'',
@@ -32,11 +33,13 @@ const NewIssuePage = () => {
     const [newDate, setNewDate] = useState("")
     const [removingIndex, setRemovingIndex] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false)
+    const [isPageLoading, setIsPageLoading] = useState(true)
     const [errors, setErrors] = useState({
         title:'',
         priority:'',
         description:''
     })
+    const {id} = useParams<{id: string}>()
     const router = useRouter()
 
      const handleDateChange = () => {
@@ -75,8 +78,8 @@ const NewIssuePage = () => {
         setErrors(updateState);
     
         try {
-            const response = await fetch("/api/issues", {
-                method: "POST",
+            const response = await fetch(`/api/issues/${id}`, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -106,16 +109,39 @@ const NewIssuePage = () => {
             setIsLoading(false);
         }
     };
+
     
+    useEffect(() => {
+        ;(async() => {
+            try {
+                const response = await fetch(`/api/issues/${id}`,{
+                    method: "GET",
+                    headers:{
+                        "Content-Type": "application/json"
+                    }
+                })
+                const result = await response.json()
+                const {title, description, priority, important_dates} = result
+                setFormData({title, description, priority, important_dates})
+                setNewDate(important_dates)
+                setIsPageLoading(false)
+            } catch (error) {
+                setIsPageLoading(false)
+                console.error("error in fetching the data", error)
+            }finally{
+                setIsPageLoading(false)
+            }
+        })()
+    },[])
 
   return (
-    <form className='max-w-xl space-y-3' onSubmit={handleSubmit}>
-        <TextField.Root placeholder='Title*' onChange={(e) => setFormData({...formData, title: e.target.value})}>
+   !isPageLoading ? (<form className='max-w-xl space-y-3' onSubmit={handleSubmit}>
+        <TextField.Root placeholder='Title*' onChange={(e) => setFormData({...formData, title: e.target.value})} value={formData.title}>
         </TextField.Root>
         {errors.title && <CalloutTheme message={errors.title} />}
         <div className='flex gap-4'>
             <div className='flex flex-col space-y-3'>
-            <Select.Root  onValueChange={(value) => setFormData({...formData, priority: value})}>
+            <Select.Root  onValueChange={(value) => setFormData({...formData, priority: value})} value={formData.priority}>
                 <Select.Trigger placeholder="Select priority*"/>
                 <Select.Content>
                 <Select.Group>
@@ -149,12 +175,15 @@ const NewIssuePage = () => {
             </div>)}
         </div>
 
-        <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>
+        <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))} value={formData.description}/>
         {errors.description && <CalloutTheme message={errors.description} />}
 
-        <Button type='submit' style={{cursor:"pointer"}} disabled={isLoading} >Submit New Issue {isLoading && <Spinner size={"small"} />}</Button>
-    </form>
+        <Button type='submit' style={{cursor:"pointer"}} disabled={isLoading} >Update Issue {isLoading && <Spinner size={"small"} />}</Button>
+    </form>) :
+    (<div className='flex justify-center items-center h-[80vh]'>
+        <Spinner size={"large"} />
+      </div>)
   )
 }
 
-export default NewIssuePage
+export default EditIssue

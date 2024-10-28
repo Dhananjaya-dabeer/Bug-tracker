@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import React from 'react'
 import { HiMiniBugAnt } from "react-icons/hi2";
 import classnames from 'classnames'
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
     const currentPath = usePathname()
-
+    const {logout} = useAuth()
     const links = [
         {label:"Dashboard", href:"/"},
         {label:"Bugs/Tasks", href:"/issues"},
@@ -30,6 +31,7 @@ const Navbar = () => {
         </ul>
         <Link 
         href={'/login'} 
+        onClick={() => logout()}
         className={classnames({
         'text-red-300': true,
         'hover:text-red-500 transition-colors': true,

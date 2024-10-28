@@ -2,25 +2,29 @@
 
 import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  loading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {
       setIsAuthenticated(true);
+      setLoading(false)
     } else {
-      
+      setLoading(false)
       router.push('/login');
     }
   }, [router]);
@@ -36,20 +40,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
       const result = await response.json(); 
       console.log(result); 
+      if (!response.ok) {
+        toast.error(result?.[0].message);
+        return
+      }
 
-      localStorage.setItem('authToken', 'your_token_here'); 
+
+      localStorage.setItem('authToken', result.token); 
       setIsAuthenticated(true);
+      toast.success(result.message)
       router.push('/'); 
     } catch (error) {
-      console.error(error);
-      throw new Error('Invalid credentials'); 
+      toast.error('Invalid credentials'); 
     }
   };
 
@@ -60,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
