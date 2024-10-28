@@ -78,6 +78,11 @@ const IssuesPage = () => {
         method:"DELETE"
       })
       const result = await response.json()
+      if(originalData){
+        const filteredData = [...originalData].filter((item) => item.id !== id)
+        setOriginalData(filteredData)
+        setData(filteredData)
+      }
       toast.success("Deleted an Issue Successfully!")
     } catch (error) {
       console.log(error)
