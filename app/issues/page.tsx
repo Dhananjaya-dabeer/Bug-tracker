@@ -51,7 +51,7 @@ const IssuesPage = () => {
   const [sortValue, setSortValue] = useState("")
   const [filterValue, setFilterValue] = useState("")
   const status = ["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED"]
-  const sortDependencies = ["Status:Lowest", "Status:Highest", "Priority:Lowest", "Priority:Highest", "Clear"]
+  const sortDependencies = ["Status:Lowest", "Status:Highest", "Priority:Lowest", "Priority:Highest"]
   const filterDependencies = ["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED",  "LOW", "MEDIUM", "HIGH"]
   useEffect(() => {
     ;(async() => {
