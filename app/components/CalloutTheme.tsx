@@ -9,14 +9,14 @@ interface theme{
 const CalloutTheme = ({message}:theme) => {
   return (
     <div>
-        <Callout.Root color='red' role='alert'>
+        { typeof window !== "undefined" && <Callout.Root color='red' role='alert'>
             <Callout.Icon>
             <GoAlert />
             </Callout.Icon>
             <Callout.Text>
                 {message}
             </Callout.Text>
-        </Callout.Root>
+        </Callout.Root>}
     </div>
   )
 }

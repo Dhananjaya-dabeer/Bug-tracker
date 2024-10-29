@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from 'zod';
 import { PrismaClient } from "@prisma/client";
-import bcrypt from 'bcryptjs'; // Make sure to install bcryptjs
-import jwt from 'jsonwebtoken'; // Make sure to install jsonwebtoken
+import bcrypt from 'bcryptjs'; 
+import jwt from 'jsonwebtoken'; 
 
 const prisma = new PrismaClient();
-const SECRET = process.env.JWT_SECRET || 'your_secret_key'; // Use your actual secret key
+const SECRET = process.env.JWT_SECRET || 'your_secret_key'; 
 
 const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
     const { email, password } = validation.data;
 
     try {
-        // Check if the user exists
+        
         let user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
-            // User does not exist, create a new account
+          
             const hashedPassword = await bcrypt.hash(password, 10);
             user = await prisma.user.create({
                 data: {
@@ -36,14 +36,14 @@ export async function POST(request: NextRequest) {
                 },
             });
         } else {
-            // User exists, check password
+          
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
                 return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
             }
         }
 
-        // Generate a token for the user
+       
         const token = jwt.sign({ id: user.id }, SECRET, { expiresIn: '1h' });
 
         return NextResponse.json({ message: 'Login successful', token }, { status: 200 });

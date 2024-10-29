@@ -175,13 +175,13 @@ const EditIssue = () => {
             </div>)}
         </div>
 
-        <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))} value={formData.description}/>
+       {typeof window !== "undefined" && <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))} value={formData.description}/>}
         {errors.description && <CalloutTheme message={errors.description} />}
 
         <Button type='submit' style={{cursor:"pointer"}} disabled={isLoading} >Update Issue {isLoading && <Spinner size={"small"} />}</Button>
     </form>) :
     (<div className='flex justify-center items-center h-[80vh]'>
-        <Spinner size={"large"} />
+       {typeof window !== "undefined" && <Spinner size={"large"} />}
       </div>)
   )
 }

@@ -149,7 +149,7 @@ const NewIssuePage = () => {
             </div>)}
         </div>
 
-        <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>
+       {typeof window !== "undefined" && <SimpleMDE placeholder='description*' onChange={(value) => setFormData(prev => ({...prev, description:value}))}/>}
         {errors.description && <CalloutTheme message={errors.description} />}
 
         <Button type='submit' style={{cursor:"pointer"}} disabled={isLoading} >Submit New Issue {isLoading && <Spinner size={"small"} />}</Button>
