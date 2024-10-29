@@ -79,7 +79,7 @@ const Highlights = ({tasks}: HighlightsProp) => {
     const taskData = tasks ? getTaskCountsByPriority(tasks) : { labels: [], counts: [] };
   return (
     <div>
-        <div className='flex justify-evenly'>
+        <div className='flex flex-col  sm:justify-evenly sm:flex-row '>
             <div>
                 <p className='mb-0'>Task Priority Distribution</p>
                 <PieChart data={taskData} typeCheck = {'priority'} />

@@ -38,7 +38,7 @@ export default function Home() {
   }, []);
 
   return (
-    tasks ? <main className="flex flex-col justify-between space-y-2">
+    tasks ? <main className="flex flex-col justify-between  sm:justify-between  space-y-2  ">
       <Highlights tasks={tasks}/>
       <FinalChart tasks={tasks} />
     </main> : <main className='flex h-[80vh] w-screen justify-center items-center'>

@@ -29,6 +29,10 @@ export const LineChart = ({ labels, data } : ChartProps) => {
         },
     },
 };
-
-  return <Line data={chartData} options={options} width={6} height={1} />;
+  // width={6} height={1}
+  return (
+    <div className='flex justify-center items-center  h-72'>
+       <Line data={chartData} options={options} width={700} height={300}  />
+    </div>
+  );
 };
