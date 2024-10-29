@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Select, Text } from '@radix-ui/themes'
 import Link from 'next/link'
-import Spinner from '@/Components/Spinner'
+import Spinner from '@/app/components/Spinner'
 import { toast } from 'react-toastify'
-import SelectTag from '@/Components/Select'
+import SelectTag from '@/app/components/Select'
 
-interface IssueData{
+export interface IssueData{
   id: string,
   createdAt: string,
   description: string,
@@ -48,8 +48,10 @@ const IssuesPage = () => {
   const [data, setData] = useState<IssueData[]>()
   const [originalData, setOriginalData] = useState<IssueData[]>()
   const [isLoading, setIsLoading] = useState(false)
+  const [sortValue, setSortValue] = useState("")
+  const [filterValue, setFilterValue] = useState("")
   const status = ["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED"]
-  const sortDependencies = ["Status:Lowest", "Status:Highest", "Priority:Lowest", "Priority:Highest"]
+  const sortDependencies = ["Status:Lowest", "Status:Highest", "Priority:Lowest", "Priority:Highest", "Clear"]
   const filterDependencies = ["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED",  "LOW", "MEDIUM", "HIGH"]
   useEffect(() => {
     ;(async() => {
@@ -150,15 +152,25 @@ const IssuesPage = () => {
     setData(filteredData)
   }
 
+  const handleClearAll = () => {
+    setData(originalData)
+    setSortValue("")
+    setFilterValue("")
+  }
+
+
+
+
   return !isLoading ? (
     <div className='space-y-6 text-sm'>
       <div className='flex justify-between items-center'>
         <Button>
           <Link href={'/issues/new'}>Create New Issue</Link>
         </Button>
-        <div className='space-x-2'>
-          <SelectTag placeholder='Sort' label='Sort' data={sortDependencies} handler={handleSort} />
-          <SelectTag placeholder='Filter' label='Filter' data={filterDependencies} handler={handleFilter} />
+        <div className='space-x-2 flex items-center'>
+          <SelectTag placeholder='Sort' label='Sort' data={sortDependencies} handler={handleSort} setValue={setSortValue} value={sortValue} />
+          <SelectTag placeholder='Filter' label='Filter' data={filterDependencies} handler={handleFilter} setValue= {setFilterValue} value = {filterValue}/>
+          <p className='text-blue-500 cursor-pointer' onClick={handleClearAll}>Clear All</p>
         </div>
       </div>
       <div className='space-y-6'>

@@ -7,8 +7,8 @@ import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-toastify';
 import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import CalloutTheme from '@/Components/CalloutTheme';
-import Spinner from '@/Components/Spinner';
+import CalloutTheme from '@/app/components/CalloutTheme';
+import Spinner from '@/app/components/Spinner';
 
 interface data{
     title:string,
@@ -99,7 +99,7 @@ const EditIssue = () => {
                 // toast.error(`${result[0]?.path[0]}: ${result[0]?.path[0] === 'priority' ? 'Priority Required!' : result[0]?.message}`);
                 return;
             } else {
-                toast.success("Task created");
+                toast.success("Task Updated");
                 router.push('/issues');
             }
         } catch (error) {
