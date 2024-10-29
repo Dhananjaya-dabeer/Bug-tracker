@@ -33,7 +33,7 @@ A simple bug tracking application built with Next.js, Prisma, and Radix UI.
 
 4. Generate Prisma client:
     ```bash
-    npm run prisma:generate
+   npx prisma generate
     ```
 
 ## Running the Project
