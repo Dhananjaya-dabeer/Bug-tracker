@@ -1,7 +1,7 @@
 'use client'
 import { Button, Select, TextField } from '@radix-ui/themes'
 import React, { useEffect, useState } from 'react'
-import SimpleMDE from "react-simplemde-editor";
+import dynamic from 'next/dynamic';
 import "easymde/dist/easymde.min.css";
 import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-toastify';
@@ -9,7 +9,9 @@ import { useParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import CalloutTheme from '@/app/components/CalloutTheme';
 import Spinner from '@/app/components/Spinner';
-
+const SimpleMDE = dynamic(() => import('react-simplemde-editor'), {
+    ssr: false, 
+});
 interface data{
     title:string,
     priority: string,
