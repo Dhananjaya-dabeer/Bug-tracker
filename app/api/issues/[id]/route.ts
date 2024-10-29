@@ -1,8 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 import {PrismaClient} from "@prisma/client"
-import { createIssueSchema } from "../route"
+import { z } from "zod"
+
 
 const prisma = new PrismaClient()
+const PriorityEnum = z.enum([ "LOW", "MEDIUM", "HIGH"])
+const StatusEnum = z.enum(["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED"]);
+
+const updateSchema = z.object({
+    title: z.string().min(1, "Title is required!").max(255),
+    priority: PriorityEnum.refine(value => value !== undefined, {
+        message: "Priority is required!",
+    }),
+    description: z.string().min(1, "Description is required"),
+    status: StatusEnum.optional(),
+    important_dates: z.array(z.string())
+})
 
 export async function GET(request: NextRequest){
 
@@ -41,7 +54,7 @@ export async function PUT(request:NextRequest){
 
    if(typeof parsedBody === 'object' ){
     try {
-        const validation = createIssueSchema.safeParse(parsedBody)
+        const validation = updateSchema.safeParse(parsedBody)
 
         if (!validation.success) {
             return NextResponse.json(validation.error.errors, { status: 400 });

@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 const PriorityEnum = z.enum([ "LOW", "MEDIUM", "HIGH"])
 const StatusEnum = z.enum(["BACKLOG", "IN_PROGRESS", "REVIEW", "COMPLETED"]);
 
-export const createIssueSchema = z.object({
+const createIssueSchema = z.object({
     title: z.string().min(1, "Title is required!").max(255),
     priority: PriorityEnum.refine(value => value !== undefined, {
         message: "Priority is required!",
